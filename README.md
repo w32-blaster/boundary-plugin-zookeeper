@@ -1,20 +1,18 @@
-Boundary SOLR Plugin
+Boundary Zookeeper Plugin
 -----------------------------
-Collects metrics from SOLR server.
+Collects metrics from Zookeeper server.
 
 ### Platforms
 - Linux
 
 ### Prerequisites
 - Python 2.6 or later
-- SOLR 4+
+- Zookeeper 3.4+
 
 ### Plugin Configuration
 
-In order for the plugin to collect statistics from SOLR server, it needs access to the cluster stats API endpoint.
-In a default installation, this would be "http://localhost:8983/solr/", but the port or path may be
-modified in configuration. 
-Changing the base_url setting in params.json allow the plugin to collect the metrics from remote hosts.
+In order the plugin to collect statistics from Zookeeper server, it needs access to the service stats API endpoint.
+In a default installation, this would be on port 2185. 
+Changing the service_port setting in params.json allow the plugin to collect the metrics from zookeeper service on different port.
 
-Using the optional parameter core_name, it is possible to set the core from where the metrics are fetched. 
-If no core_name is specified, the system default will be used.
+Additionally a service_host can be added which will set the server where the zookeeper is running.
