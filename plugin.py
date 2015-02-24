@@ -33,6 +33,22 @@ Default timeout vale
 """
 DEFAULT_TIMEOUT = 1
 
+"""
+List of possible values
+"""
+METRICS = (
+	("ZK_WATCH_COUNT", False),
+	("ZK_NUM_ALIVE_CONNECTIONS", False),
+	("ZK_OPEN_FILE_DESCRIPTOR_COUNT", False),
+	("ZK_SERVER_STATE", False),
+	("ZK_PACKETS_SENT", True),
+	("ZK_PACKETS_RECEIVED", True),
+	("ZK_MIN_LATENCY", False),
+	("ZK_EPHEMERALS_COUNT", False),
+	("ZK_ZNODE_COUNT", False),
+	("ZK_MAX_FILE_DESCRIPTOR_COUNT", False)
+)
+
 class ZookeeperPlugin(object):
     def __init__(self, boundary_metric_prefix):
         self.boundary_metric_prefix = boundary_metric_prefix
@@ -105,10 +121,10 @@ class ZookeeperPlugin(object):
         raise Exception("Max retries exceeded retrieving data")
 
     def handle_metrics(self, data):
-	accumulate = False
-	for metric_name, metric_value in data.iteritems():
+	for boundary_name, accumulate in METRICS:
+	    metric_name = boundary_name.lower()
             try:
-		value = metric_value
+		value = data[boundary_name.lower()].strip()
             except KeyError:
                 value = None
 
@@ -116,9 +132,9 @@ class ZookeeperPlugin(object):
                 continue
 
             if accumulate:
-                value = self.accumulator.accumulate(metric_name, value)
+                value = self.accumulator.accumulate(metric_name, int(value) )
 
-            boundary_plugin.boundary_report_metric(self.boundary_metric_prefix + metric_name.upper(), value.strip())
+            boundary_plugin.boundary_report_metric(self.boundary_metric_prefix + boundary_name, value)
 
     def main(self):
         logging.basicConfig(level=logging.ERROR, filename=self.settings.get('log_file', None))
